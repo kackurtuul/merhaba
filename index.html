@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bir Merhaba...</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  * { -webkit-tap-highlight-color: transparent; }
+  html, body {
+    overscroll-behavior: none;
+    background: #0d0d14;
+  }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  .bg-gradient-warm {
+    background: radial-gradient(circle at 20% 20%, rgba(251,191,140,0.10), transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(244,163,190,0.10), transparent 45%),
+                linear-gradient(160deg, #0b0b13 0%, #14121d 45%, #1a131a 100%);
+  }
+
+  .glass {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.09);
+  }
+
+  .glow-amber {
+    box-shadow: 0 0 25px 2px rgba(251,191,140,0.25), 0 0 60px 10px rgba(251,191,140,0.08);
+  }
+
+  .glow-pink {
+    box-shadow: 0 0 20px rgba(244,163,190,0.35);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 18px rgba(251,191,140,0.35);
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .animate-spin-slow {
+    animation: spin-slow 9s linear infinite;
+  }
+  .spin-paused {
+    animation-play-state: paused;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px 2px rgba(251,191,140,0.25); }
+    50% { box-shadow: 0 0 35px 8px rgba(251,191,140,0.45); }
+  }
+  .animate-pulse-glow {
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in-up {
+    animation: fade-in-up 0.7s ease forwards;
+  }
+
+  .vinyl {
+    background: repeating-radial-gradient(circle at center, #1c1c26 0px, #1c1c26 2px, #222230 3px, #1c1c26 4px);
+  }
+
+  .dot-flashing {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
+    background-color: #fbbf90;
+    color: #fbbf90;
+    animation: dot-flashing 1s infinite linear alternate;
+    animation-delay: 0.5s;
+  }
+  .dot-flashing::before, .dot-flashing::after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 0;
+  }
+  .dot-flashing::before {
+    left: -14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
+    background-color: #fbbf90;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 0s;
+  }
+  .dot-flashing::after {
+    left: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
+    background-color: #fbbf90;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 1s;
+  }
+  @keyframes dot-flashing {
+    0% { background-color: #fbbf90; }
+    50%, 100% { background-color: rgba(251,191,144,0.25); }
+  }
+
+  .screen {
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .screen-hidden {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    transform: translateY(8px);
+  }
+</style>
+</head>
+<body class="bg-gradient-warm min-h-screen overflow-x-hidden text-neutral-100">
+
+<div class="min-h-screen w-full flex items-center justify-center px-4 py-8 relative">
+
+  <!-- ===================== A. GİRİŞ EKRANI ===================== -->
+  <section id="screen-intro" class="screen w-full max-w-sm mx-auto flex flex-col items-center text-center gap-8">
+    <div class="relative flex items-center justify-center">
+      <div class="absolute w-40 h-40 rounded-full glow-amber animate-pulse-glow"></div>
+      <div class="vinyl w-36 h-36 rounded-full flex items-center justify-center animate-spin-slow border border-white/10 overflow-hidden">
+        <img src="cover.jpg" alt="Şarkı kapağı" class="absolute w-24 h-24 rounded-full object-cover border-2 border-[#1c1c26]">
+        <div class="relative w-3 h-3 rounded-full bg-[#0d0d14] border border-white/10"></div>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <p class="text-xs tracking-[0.3em] uppercase text-amber-100/50">merhabalar</p>
+      <h1 class="text-xl font-light text-neutral-200">sana özel bir şey hazırladım</h1>
+    </div>
+
+    <button id="start-btn" class="group relative px-8 py-4 rounded-full glass glow-pink flex items-center gap-3 active:scale-95 transition-transform duration-200">
+      <i class="fa-solid fa-play text-amber-200 text-sm group-active:scale-90 transition-transform"></i>
+      <span class="text-sm font-medium tracking-wide text-neutral-100">Müziği Başlat &amp; Oyna</span>
+    </button>
+
+    <p class="text-[11px] text-neutral-500 max-w-[220px]">sesi açık tutmayı unutma ✨</p>
+  </section>
+
+  <!-- ===================== B. MÜZİK & İÇERİK EKRANI ===================== -->
+  <section id="screen-main" class="screen screen-hidden w-full max-w-sm mx-auto flex flex-col gap-5">
+
+    <!-- Mini Music Player -->
+    <div class="glass rounded-2xl p-5 flex flex-col items-center gap-3">
+      <div class="relative flex-shrink-0 w-44 h-44">
+        <div id="vinyl-disc" class="w-full h-full rounded-full overflow-hidden animate-spin-slow border border-white/10 glow-amber">
+          <img src="cover.jpg" alt="Şarkı kapağı" class="w-full h-full object-cover">
+        </div>
+        <button id="play-pause-btn" class="absolute bottom-0 right-0 w-11 h-11 rounded-full glass glow-pink flex items-center justify-center active:scale-90 transition-transform duration-200">
+          <i id="play-pause-icon" class="fa-solid fa-pause text-amber-100 text-sm"></i>
+        </button>
+      </div>
+      <div class="w-full text-center">
+        <p class="text-sm font-medium text-neutral-100 truncate">Kalbin Birine Takılırsa</p>
+        <p class="text-xs text-neutral-400 truncate flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-volume-high text-amber-100/60 text-[10px]"></i>
+          Park
+        </p>
+        <div class="mt-2 h-1 w-full bg-white/10 rounded-full overflow-hidden">
+          <div id="progress-bar" class="h-full w-0 bg-gradient-to-r from-amber-200 to-pink-300 rounded-full transition-[width] duration-200 ease-linear"></div>
+        </div>
+        <div class="mt-1 flex justify-between text-[10px] text-neutral-500 tabular-nums">
+          <span id="current-time">0:00</span>
+          <span id="total-time">0:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Card -->
+    <div class="glass rounded-2xl p-5 fade-in-up">
+      <p class="text-[15px] leading-relaxed text-neutral-200">
+        Sıradayken vaktini almak ya da seni iş yerinde zor durumda bırakmak istemedim. Güleryüzün ve enerjin bir süredir çok hoşuma gidiyor. Eğer senin için de bir mahsuru yoksa tanışmak isterim. :)
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form id="contact-form" class="glass rounded-2xl p-5 flex flex-col gap-3 fade-in-up">
+      <label for="contact-input" class="text-xs text-neutral-400 tracking-wide">İletişim bilgin</label>
+      <input
+        id="contact-input"
+        type="text"
+        required
+        placeholder="Instagram hesabın veya numaran..."
+        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-amber-200/40 focus:border-amber-200/30 transition"
+      />
+      <button
+        type="submit"
+        id="submit-btn"
+        class="mt-1 w-full py-3 rounded-xl bg-gradient-to-r from-amber-200/90 to-pink-200/90 text-[#1a130f] text-sm font-semibold tracking-wide active:scale-95 transition-transform duration-200 flex items-center justify-center gap-2"
+      >
+        <span id="submit-label">Gönder</span>
+      </button>
+    </form>
+
+    <!-- Loading state -->
+    <div id="loading-card" class="hidden glass rounded-2xl p-8 flex flex-col items-center justify-center gap-4">
+      <div class="dot-flashing"></div>
+      <p class="text-xs text-neutral-400 tracking-wide">gönderiliyor...</p>
+    </div>
+
+    <!-- Success state -->
+    <div id="success-card" class="hidden glass rounded-2xl p-6 flex flex-col items-center text-center gap-3">
+      <div class="w-12 h-12 rounded-full glow-amber flex items-center justify-center bg-white/5">
+        <i class="fa-solid fa-check text-amber-200"></i>
+      </div>
+      <p class="text-[15px] leading-relaxed text-neutral-200">
+        Harika! Bilgilerin bana ulaştı. Yazmasan bile sonraki karşılaşmalarımızda hiçbir gerginlik olmayacağına söz veriyorum, sadece sıradan bir müşteri olarak kolay gelsin der geçerim. Harika bir gün geçirmen dileğiyle! ✨
+      </p>
+    </div>
+
+    <!-- Error state -->
+    <div id="error-card" class="hidden glass rounded-2xl p-6 flex flex-col items-center text-center gap-3">
+      <div class="w-12 h-12 rounded-full flex items-center justify-center bg-white/5 border border-pink-300/30">
+        <i class="fa-solid fa-triangle-exclamation text-pink-200"></i>
+      </div>
+      <p class="text-[15px] leading-relaxed text-neutral-200">
+        Bir şeyler ters gitti, bilgilerin bana ulaşmadı. Bağlantını kontrol edip tekrar dener misin?
+      </p>
+      <button id="retry-btn" type="button" class="mt-1 px-6 py-2.5 rounded-xl glass glow-pink text-sm font-medium text-neutral-100 active:scale-95 transition-transform duration-200">
+        Tekrar Dene
+      </button>
+    </div>
+
+  </section>
+
+</div>
+
+<audio id="bg-music" src="park.mp3" loop></audio>
+
+<script>
+  // ------- Webhook placeholder: buraya Formspree/Formspark/Telegram bot URL'ini koy -------
+  const WEBHOOK_URL = "https://formspree.io/f/mojgedzd";
+
+  const startBtn = document.getElementById('start-btn');
+  const introScreen = document.getElementById('screen-intro');
+  const mainScreen = document.getElementById('screen-main');
+  const bgMusic = document.getElementById('bg-music');
+
+  startBtn.addEventListener('click', () => {
+    bgMusic.play().catch(() => {});
+
+    introScreen.classList.add('screen-hidden');
+    mainScreen.classList.remove('screen-hidden');
+  });
+
+  const playPauseBtn = document.getElementById('play-pause-btn');
+  const playPauseIcon = document.getElementById('play-pause-icon');
+  const vinylDisc = document.getElementById('vinyl-disc');
+
+  playPauseBtn.addEventListener('click', () => {
+    if (bgMusic.paused) {
+      bgMusic.play().catch(() => {});
+      playPauseIcon.classList.remove('fa-play');
+      playPauseIcon.classList.add('fa-pause');
+      vinylDisc.classList.remove('spin-paused');
+    } else {
+      bgMusic.pause();
+      playPauseIcon.classList.remove('fa-pause');
+      playPauseIcon.classList.add('fa-play');
+      vinylDisc.classList.add('spin-paused');
+    }
+  });
+
+  const progressBar = document.getElementById('progress-bar');
+  const currentTimeLabel = document.getElementById('current-time');
+  const totalTimeLabel = document.getElementById('total-time');
+
+  function formatTime(seconds) {
+    if (!isFinite(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return `${mins}:${secs}`;
+  }
+
+  bgMusic.addEventListener('loadedmetadata', () => {
+    totalTimeLabel.textContent = formatTime(bgMusic.duration);
+  });
+
+  bgMusic.addEventListener('timeupdate', () => {
+    const percent = bgMusic.duration ? (bgMusic.currentTime / bgMusic.duration) * 100 : 0;
+    progressBar.style.width = `${percent}%`;
+    currentTimeLabel.textContent = formatTime(bgMusic.currentTime);
+  });
+
+  const form = document.getElementById('contact-form');
+  const loadingCard = document.getElementById('loading-card');
+  const successCard = document.getElementById('success-card');
+  const errorCard = document.getElementById('error-card');
+  const retryBtn = document.getElementById('retry-btn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const contactValue = document.getElementById('contact-input').value.trim();
+    if (!contactValue) return;
+
+    form.classList.add('hidden');
+    errorCard.classList.add('hidden');
+    loadingCard.classList.remove('hidden');
+
+    try {
+      if (WEBHOOK_URL && WEBHOOK_URL !== "BURAYA_WEBHOOK_GELECEK") {
+        const res = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ iletisim_bilgisi: contactValue, gonderim_zamani: new Date().toISOString() })
+        });
+        if (!res.ok) throw new Error('Sunucu hatası: ' + res.status);
+      } else {
+        // Webhook henüz ayarlanmadıysa gerçek istek atmadan bekleme simülasyonu yap
+        await new Promise(resolve => setTimeout(resolve, 1200));
+      }
+
+      loadingCard.classList.add('hidden');
+      successCard.classList.remove('hidden');
+      successCard.classList.add('fade-in-up');
+    } catch (err) {
+      console.error('Gönderim hatası:', err);
+      loadingCard.classList.add('hidden');
+      errorCard.classList.remove('hidden');
+      errorCard.classList.add('fade-in-up');
+    }
+  });
+
+  retryBtn.addEventListener('click', () => {
+    errorCard.classList.add('hidden');
+    form.classList.remove('hidden');
+  });
+</script>
+
+</body>
+</html>
