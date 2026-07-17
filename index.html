@@ -203,6 +203,13 @@
       >
         <span id="submit-label">Gönder</span>
       </button>
+      <button
+        type="button"
+        id="skip-btn"
+        class="text-[11px] text-neutral-500 underline underline-offset-2 decoration-neutral-600 active:text-neutral-400 transition-colors self-center"
+      >
+        şimdilik geçmek istiyorum
+      </button>
     </form>
 
     <!-- Loading state -->
@@ -217,7 +224,17 @@
         <i class="fa-solid fa-check text-amber-200"></i>
       </div>
       <p class="text-[15px] leading-relaxed text-neutral-200">
-        Harika! Bilgilerin bana ulaştı. Yazmasan bile sonraki karşılaşmalarımızda hiçbir gerginlik olmayacağına söz veriyorum, sadece sıradan bir müşteri olarak kolay gelsin der geçerim. Harika bir gün geçirmen dileğiyle! ✨
+        Harika! Bilgilerin bana ulaştı. Görüşmek için sabırsızlanıyorum, harika bir gün geçirmen dileğiyle! ✨
+      </p>
+    </div>
+
+    <!-- Skip state -->
+    <div id="skip-card" class="hidden glass rounded-2xl p-6 flex flex-col items-center text-center gap-3">
+      <div class="w-12 h-12 rounded-full flex items-center justify-center bg-white/5 border border-amber-200/20">
+        <i class="fa-solid fa-heart text-amber-200/70"></i>
+      </div>
+      <p class="text-[15px] leading-relaxed text-neutral-200">
+        Sorun değil, gördüğünü biliyorum, boşuna beklemeyeceğim. Sonraki karşılaşmalarımızda hiçbir gerginlik olmayacağına söz veriyorum, sadece sıradan bir müşteri olarak kolay gelsin der geçerim. Harika bir gün geçirmen dileğiyle! ✨
       </p>
     </div>
 
@@ -296,10 +313,29 @@
   });
 
   const form = document.getElementById('contact-form');
+  const skipBtn = document.getElementById('skip-btn');
   const loadingCard = document.getElementById('loading-card');
   const successCard = document.getElementById('success-card');
+  const skipCard = document.getElementById('skip-card');
   const errorCard = document.getElementById('error-card');
   const retryBtn = document.getElementById('retry-btn');
+
+  async function sendPayload(payload) {
+    if (WEBHOOK_URL && WEBHOOK_URL !== "BURAYA_WEBHOOK_GELECEK") {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Sunucu hatası: ' + res.status);
+    } else {
+      // Webhook henüz ayarlanmadıysa gerçek istek atmadan bekleme simülasyonu yap
+      await new Promise(resolve => setTimeout(resolve, 1200));
+    }
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -312,26 +348,30 @@
     loadingCard.classList.remove('hidden');
 
     try {
-      if (WEBHOOK_URL && WEBHOOK_URL !== "BURAYA_WEBHOOK_GELECEK") {
-        const res = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({ iletisim_bilgisi: contactValue, gonderim_zamani: new Date().toISOString() })
-        });
-        if (!res.ok) throw new Error('Sunucu hatası: ' + res.status);
-      } else {
-        // Webhook henüz ayarlanmadıysa gerçek istek atmadan bekleme simülasyonu yap
-        await new Promise(resolve => setTimeout(resolve, 1200));
-      }
-
+      await sendPayload({ durum: 'gonderildi', iletisim_bilgisi: contactValue, gonderim_zamani: new Date().toISOString() });
       loadingCard.classList.add('hidden');
       successCard.classList.remove('hidden');
       successCard.classList.add('fade-in-up');
     } catch (err) {
       console.error('Gönderim hatası:', err);
+      loadingCard.classList.add('hidden');
+      errorCard.classList.remove('hidden');
+      errorCard.classList.add('fade-in-up');
+    }
+  });
+
+  skipBtn.addEventListener('click', async () => {
+    form.classList.add('hidden');
+    errorCard.classList.add('hidden');
+    loadingCard.classList.remove('hidden');
+
+    try {
+      await sendPayload({ durum: 'gecti', gonderim_zamani: new Date().toISOString() });
+      loadingCard.classList.add('hidden');
+      skipCard.classList.remove('hidden');
+      skipCard.classList.add('fade-in-up');
+    } catch (err) {
+      console.error('Geçme bildirimi hatası:', err);
       loadingCard.classList.add('hidden');
       errorCard.classList.remove('hidden');
       errorCard.classList.add('fade-in-up');
