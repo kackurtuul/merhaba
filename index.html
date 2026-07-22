@@ -265,9 +265,35 @@
 <audio id="bg-music" src="park.mp3" loop></audio>
 
 <script>
-  // ------- Webhook placeholder: buraya Formspree/Formspark/Telegram bot URL'ini koy -------
+  // ------- Webhook / Formspree URL -------
   const WEBHOOK_URL = "https://formspree.io/f/mojgedzd";
 
+  // ==========================================
+  // 1. SAYFA AÇILDIĞINDA ANLIK MAIL BİLDİRİMİ
+  // ==========================================
+  window.addEventListener('DOMContentLoaded', () => {
+    // Aynı sekmede tekrar tekrar mail atmaması için kontrol
+    if (!sessionStorage.getItem('page_view_sent')) {
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          bildirim: "QR Kod Sayfası Açıldı! (Biri siteye girdi)",
+          zaman: new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' }),
+          userAgent: navigator.userAgent
+        })
+      }).then(() => {
+        sessionStorage.setItem('page_view_sent', 'true');
+      }).catch(err => console.error("Ziyaret bildirimi gönderilemedi:", err));
+    }
+  });
+
+  // ==========================================
+  // 2. MÜZİK VE EKRAN KONTROLLERİ
+  // ==========================================
   const startBtn = document.getElementById('start-btn');
   const introScreen = document.getElementById('screen-intro');
   const mainScreen = document.getElementById('screen-main');
@@ -275,7 +301,6 @@
 
   startBtn.addEventListener('click', () => {
     bgMusic.play().catch(() => {});
-
     introScreen.classList.add('screen-hidden');
     mainScreen.classList.remove('screen-hidden');
   });
@@ -319,6 +344,9 @@
     currentTimeLabel.textContent = formatTime(bgMusic.currentTime);
   });
 
+  // ==========================================
+  // 3. FORM VE BUTON BİLDİRİMLERİ
+  // ==========================================
   const form = document.getElementById('contact-form');
   const skipBtn = document.getElementById('skip-btn');
   const loadingCard = document.getElementById('loading-card');
@@ -339,7 +367,6 @@
       });
       if (!res.ok) throw new Error('Sunucu hatası: ' + res.status);
     } else {
-      // Webhook henüz ayarlanmadıysa gerçek istek atmadan bekleme simülasyonu yap
       await new Promise(resolve => setTimeout(resolve, 1200));
     }
   }
@@ -355,7 +382,11 @@
     loadingCard.classList.remove('hidden');
 
     try {
-      await sendPayload({ durum: 'gonderildi', iletisim_bilgisi: contactValue, gonderim_zamani: new Date().toISOString() });
+      await sendPayload({ 
+        durum: 'iletişim bilgisi gönderildi', 
+        iletisim_bilgisi: contactValue, 
+        gonderim_zamani: new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' }) 
+      });
       loadingCard.classList.add('hidden');
       successCard.classList.remove('hidden');
       successCard.classList.add('fade-in-up');
@@ -373,7 +404,10 @@
     loadingCard.classList.remove('hidden');
 
     try {
-      await sendPayload({ durum: 'gecti', gonderim_zamani: new Date().toISOString() });
+      await sendPayload({ 
+        durum: 'geçti butonuna basıldı', 
+        gonderim_zamani: new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' }) 
+      });
       loadingCard.classList.add('hidden');
       skipCard.classList.remove('hidden');
       skipCard.classList.add('fade-in-up');
