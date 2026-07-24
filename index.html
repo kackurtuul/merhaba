@@ -271,9 +271,15 @@
   // ==========================================
   // 1. SAYFA AÇILDIĞINDA ANLIK MAIL BİLDİRİMİ
   // ==========================================
+ // ==========================================
+  // 1. SAYFA AÇILDIĞINDA ANLIK MAIL BİLDİRİMİ (Sadece Mobil)
+  // ==========================================
   window.addEventListener('DOMContentLoaded', () => {
-    // Aynı sekmede tekrar tekrar mail atmaması için kontrol
-    if (!sessionStorage.getItem('page_view_sent')) {
+    // Mobil cihaz kontrolü (Android, iPhone, iPad vs.)
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Sadece MOBİL cihazsa VE bu sekmede daha önce bildirim atılmadıysa gönder
+    if (isMobile && !sessionStorage.getItem('page_view_sent')) {
       fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: {
@@ -288,6 +294,8 @@
       }).then(() => {
         sessionStorage.setItem('page_view_sent', 'true');
       }).catch(err => console.error("Ziyaret bildirimi gönderilemedi:", err));
+    } else if (!isMobile) {
+      console.log("Masaüstü/Bot girişi algılandı, Formspree bildirimi engellendi.");
     }
   });
 
